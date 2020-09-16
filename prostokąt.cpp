@@ -20,7 +20,6 @@ int main()
 		{
 			break;
 		}
-		cout<<a<<endl<<i<<endl;
 		cout<<"X";
 		for (int z=1; z<=b-2; z++)
 		{
