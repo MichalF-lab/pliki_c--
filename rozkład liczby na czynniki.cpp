@@ -5,10 +5,10 @@ int main()
 {
 	int i;
 	cin>>i;
-	while (i>1)
+	do
 	{
 		cout<<i%10<<"  ";
 		i = i/10 ;
-	}
+	} while (i>1);
 	return 0;
 }
