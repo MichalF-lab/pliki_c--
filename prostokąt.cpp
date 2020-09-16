@@ -16,7 +16,17 @@ int main()
 			cout<<endl;
 			i++;
 		}
-		
+		if (i == a+1)
+		{
+			break;
+		}
+		cout<<a<<endl<<i<<endl;
+		cout<<"X";
+		for (int z=1; z<=b-2; z++)
+		{
+			cout<<" ";
+		}
+		cout<<"X"<<endl;
 	}
 	return 0;
 }
