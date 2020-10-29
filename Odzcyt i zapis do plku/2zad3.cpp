@@ -12,10 +12,10 @@ int main(){
     plik2<<"zad3\n"<<endl;
     while (getline(plik1,linia)){
         i = atoi(linia.c_str());
-        sumawszystkiego+=i;
 	    while (i>1)
 	    {
 	    	sum+=i%10;
+            sumawszystkiego+=i%10;
 		    i/=10;
 	    }
         if(sum > 30)

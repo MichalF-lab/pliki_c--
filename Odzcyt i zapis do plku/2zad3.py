@@ -8,10 +8,10 @@ sumwszytkiego=0
 
 for i in y:
     a = int(i)
-    sumwszytkiego+=a
     sum=0
     while (a>1):
             sum+=a%10
+            sumwszytkiego+=a%10
             a=a//10
     if (sum > 30):
         f.write(i+"\n")
