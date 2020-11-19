@@ -187,9 +187,6 @@ Book *find_by_print(string wydawnictwo, int ile_ksiazek, Book* tablica_ksiazek){
 
 
 
-
-
-
 void wypozycz(Book ksiazka, Book *tablica_ksiazek, bool* tablica_ksiazek_wypozyczonych, int ile_ksiazek) {
     for (int i=0; i<ile_ksiazek;i++){
         if (ksiazka.ID_ksiazek == tablica_ksiazek[i].ID_ksiazek) {
@@ -238,7 +235,7 @@ int main(void){
     imiona[0] = "Maciej";
     imiona[1] = "Tomasz";
 
-    add_autor(imiona, 2, "Sapkowsko", ID_autora, tablica_autorow, ile_autorow);
+    add_autor(imiona, 2, "Sapkowski", ID_autora, tablica_autorow, ile_autorow);
     add_book("Ostatnie zyczenie", tablica_autorow[0], "1234567890123", "Nowa era", 2003, "Wiedzmin", tablica_ksiazek, ile_ksiazek, Id_ksiazek, tablica_ksiazek_wypozyczonych);
     add_book("Wieza Jaskolki", tablica_autorow[0], "1234567890123", "Nowa era", 1998, "Wiedzmin", tablica_ksiazek, ile_ksiazek, Id_ksiazek, tablica_ksiazek_wypozyczonych);
     delete_book(tablica_ksiazek[0], tablica_ksiazek, ile_ksiazek, tablica_ksiazek_wypozyczonych);
