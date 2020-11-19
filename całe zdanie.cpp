@@ -68,7 +68,7 @@ void add_autor(string* imie,int ile_imion,string nazwisko,int & ID_autora,  Auto
     tablica_autorow_pom[ile_autorow] = autor;
     ile_autorow++;
     delete [] tablica_autorow;
-    Autor* tablica_autorow = tablica_autorow_pom;
+    tablica_autorow = tablica_autorow_pom;
 }
 
 
@@ -81,7 +81,7 @@ Book create_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int
     return ksiazka;
 }
 
-void add_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza,Book ksiazka, Book* tablica_ksiazek,int & ile_ksiazek,int & Id_ksiazek, bool* tablica_ksiazek_wypozyczonych) {
+void add_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza, Book* tablica_ksiazek,int & ile_ksiazek,int & Id_ksiazek, bool* tablica_ksiazek_wypozyczonych) {
     Book ksiazka = create_book(tytul, autor, ISBN, wydawnictwo,rok_wydania,seria_wydawnicza, Id_ksiazek);
     Book* tablica_ksiazek_pom = new Book [ile_ksiazek];
     bool* tablica_ksiazek_wypozyczonych_pom = new bool [ile_ksiazek];
@@ -94,8 +94,8 @@ void add_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int ro
     ile_ksiazek++;
     delete [] tablica_ksiazek;
     delete [] tablica_ksiazek_wypozyczonych;
-    Book* tablica_ksiazek = tablica_ksiazek_pom;
-    bool* tablica_ksiazek_wypozyczonych = tablica_ksiazek_wypozyczonych_pom;
+    tablica_ksiazek = tablica_ksiazek_pom;
+    tablica_ksiazek_wypozyczonych = tablica_ksiazek_wypozyczonych_pom;
 }
 
 void delete_book(Book ksiazka, Book *tablica_ksiazek, int & ile_ksiazek, bool* tablica_ksiazek_wypozyczonych) {
@@ -115,8 +115,8 @@ void delete_book(Book ksiazka, Book *tablica_ksiazek, int & ile_ksiazek, bool* t
             }
             delete [] tablica_ksiazek;
             delete [] tablica_ksiazek_wypozyczonych;
-            Book* tablica_ksiazek = tablica_ksiazek_pom;
-            bool* tablica_ksiazek_wypozyczonych = tablica_ksiazek_wypozyczonych_pom;
+            tablica_ksiazek = tablica_ksiazek_pom;
+            tablica_ksiazek_wypozyczonych = tablica_ksiazek_wypozyczonych_pom;
             ile_ksiazek--;
             cout << "Pomyslnie usunieto ksiazke" << endl;
             return;
@@ -227,12 +227,30 @@ void zwroc(Book ksiazka, Book *tablica_ksiazek, bool* tablica_ksiazek_wypozyczon
 
 
 int main(void){
-    int ID_autora = 0, ile_autorow=0, Id_ksiazek=0, ile_ksiazek = 0, Id_klienta = 0, ile_klientow=0;
+    int ID_autora = 0, ile_autorow=0, Id_ksiazek=0, ile_ksiazek = 0, ID_klienta = 0, ile_klientow=0;
+
     Book* tablica_ksiazek = new Book[ile_ksiazek];
     Osoba* tablica_kilentow = new Osoba[ile_klientow];
     Autor* tablica_autorow = new Autor[ile_autorow];
     bool* tablica_ksiazek_wypozyczonych = new bool[ile_ksiazek];
-    
 
+    string *imiona = new string[2];
+    imiona[0] = "Maciej";
+    imiona[1] = "Tomasz";
 
+    add_autor(imiona, 2, "Sapkowsko", ID_autora, tablica_autorow, ile_autorow);
+    add_book("Ostatnie zyczenie", tablica_autorow[0], "1234567890123", "Nowa era", 2003, "Wiedzmin", tablica_ksiazek, ile_ksiazek, Id_ksiazek, tablica_ksiazek_wypozyczonych);
+    add_book("Wieza Jaskolki", tablica_autorow[0], "1234567890123", "Nowa era", 1998, "Wiedzmin", tablica_ksiazek, ile_ksiazek, Id_ksiazek, tablica_ksiazek_wypozyczonych);
+    delete_book(tablica_ksiazek[0], tablica_ksiazek, ile_ksiazek, tablica_ksiazek_wypozyczonych);
+
+    Adres adres;
+
+    add_person(imiona, 2, "Jankowiak", adres, ID_klienta, ile_klientow, tablica_kilentow);
+    Book* by_autor = find_by_autor(tablica_ksiazek, ile_ksiazek, tablica_autorow[0]);
+    Book by_title = find_by_title("Wieza Jaskolki", ile_ksiazek, tablica_ksiazek);
+    Book * by_wydawnictwo = find_by_print("Nowa era", ile_ksiazek, tablica_ksiazek);
+
+    wypozycz(tablica_ksiazek[1], tablica_ksiazek, tablica_ksiazek_wypozyczonych, ile_ksiazek);
+    zwroc(tablica_ksiazek[1], tablica_ksiazek, tablica_ksiazek_wypozyczonych, ile_ksiazek);
+    return 0;
 }
