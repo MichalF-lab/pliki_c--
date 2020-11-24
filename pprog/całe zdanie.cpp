@@ -63,10 +63,11 @@ Autor create_autor(string* imie,int ile_imion,string nazwisko,int & ID_autora,  
 
 void add_autor(string* imie,int ile_imion,string nazwisko,int & ID_autora,  Autor * tablica_autorow, int & ile_autorow){
     Autor autor = create_autor(imie, ile_imion, nazwisko, ID_autora, tablica_autorow, ile_autorow);
-    Autor* tablica_autorow_pom = new Autor[ile_autorow];
-    for(int i=0;i<ile_autorow;i++) tablica_autorow_pom[i]=tablica_autorow[i];
-    tablica_autorow_pom[ile_autorow] = autor;
-    ile_autorow++;
+    Autor* tablica_autorow_pom = new Autor[++ile_autorow];
+    for(int i=0;i<ile_autorow-1;i++){
+    tablica_autorow_pom[i]=tablica_autorow[i];
+    }
+    tablica_autorow_pom[ile_autorow-1] = autor;
     delete [] tablica_autorow;
     tablica_autorow = tablica_autorow_pom;
 }
@@ -75,7 +76,7 @@ void add_autor(string* imie,int ile_imion,string nazwisko,int & ID_autora,  Auto
 
 
 
-Book create_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza, int & Id_ksiazek){
+Book create_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza,  int & Id_ksiazek){
     Book ksiazka = {tytul, autor, ISBN, wydawnictwo, rok_wydania, seria_wydawnicza, Id_ksiazek};
     Id_ksiazek++;
     return ksiazka;
