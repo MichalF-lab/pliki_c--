@@ -1,12 +1,7 @@
-#include <string.h>
+#include <string>
 #include <iostream>
-#include <stdio.h>
-
-#pragma warning(suppress : 4996)
 
 using namespace std;
-
-int ID = 0, ile_ksiazek = 0;
 
 struct Adres
 {
@@ -15,45 +10,203 @@ struct Adres
     int nr_domu;
     int nr_mieszkania;
     int kod;
-} Poznan;
+};
 
 
 struct Osoba
 {
-    string imie;
+    string* imie;
+    int ile_imion;
     string nazwisko;
     Adres adres;
-}klient1 = { "Kacper","Nowak",Poznan };
+    int ID_klienta;
+};
 
 struct Autor
 {
     string* imie;
+    int ile_imion;
     string nazwisko;
-    int ID;
-}Sapkowski;
+    int ID_autora;
+};
 
 
 struct Book
 {
     string tytul;
     Autor autor;
-    char* ISBN;
+    string ISBN;
     string wydawnictwo;
     int rok_wydania;
     string seria_wydawnicza;
+    // jako ze moze byc pare takich samych ksiazek nalezy dodac klucz glówny
+    int ID_ksiazek;
 };
 
-Book* tablica_ksiazek = new Book[1000];
-Osoba* tablica_kilentow = new Osoba[1000];
-Autor* tablica_autorow = new Autor[1000];
-bool tablica_ksiazek_wypozyczonych[1000];
 
-void wypozycz(Book ksiazka) {
-    int ktory = 0;
-    while (ktory < 1000) {
-        if (ksiazka.ISBN == tablica_ksiazek->ISBN) {
-            if (tablica_ksiazek_wypozyczonych[ktory] != true) {
-                tablica_ksiazek_wypozyczonych[ktory] = true;
+int f_ID_autora(Autor nowy, Autor* tablica_autorow, int ile_autorow, int& ID_autora) {
+    if (tablica_autorow == nullptr) return 0;
+    for (int i = 0; i < ile_autorow; i++) {
+        if (tablica_autorow[i].imie == nowy.imie) {
+            if (tablica_autorow[i].nazwisko == nowy.nazwisko) return tablica_autorow[i].ID_autora;
+        }
+    }
+    ID_autora++;
+    return ID_autora;
+}
+
+
+Autor create_autor(string* imie, int ile_imion, string nazwisko, int& ID_autora, Autor* tablica_autorow, int ile_autorow) {
+    Autor autor = { imie,ile_imion, nazwisko, ID_autora };
+    autor.ID_autora = f_ID_autora(autor, tablica_autorow, ile_autorow, ID_autora);
+    return autor;
+}
+
+void f(int* y, int x) {
+    *y = x;
+}
+
+void add_autor(string* imie, int ile_imion, string nazwisko, int& ID_autora, Autor** tablica_autorow, int& ile_autorow) {
+    Autor* tablica_autorow_pom = new Autor[++ile_autorow];
+    if (*tablica_autorow != nullptr) {
+        for (int i = 0; i <= ile_autorow; i++) {
+            tablica_autorow_pom[i] = (*tablica_autorow)[i];
+        }
+        delete[] * tablica_autorow;
+    }
+    tablica_autorow_pom[ile_autorow - 1] = create_autor(imie, ile_imion, nazwisko, ID_autora, *tablica_autorow, ile_autorow);
+
+    *tablica_autorow = tablica_autorow_pom;
+}
+
+void print_autor(Autor autor) {
+    for (int i = 0; i < autor.ile_imion; i++) cout << autor.imie[i] << " ";
+    cout << autor.nazwisko << " " << autor.ID_autora << endl;
+}
+
+
+
+Book create_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza, int& Id_ksiazek) {
+    Book ksiazka = { tytul, autor, ISBN, wydawnictwo, rok_wydania, seria_wydawnicza, Id_ksiazek };
+    Id_ksiazek++;
+    return ksiazka;
+}
+
+void add_book(string tytul, Autor autor, string ISBN, string wydawnictwo, int rok_wydania, string seria_wydawnicza, Book** tablica_ksiazek, Book* const_tab_ksiazek, int& ile_ksiazek, int& Id_ksiazek, bool** tablica_ksiazek_wypozyczonych, bool* const_tab_wypozyczonych) {
+    Book* tablica_ksiazek_pom = new Book[++ile_ksiazek];
+    bool* tablica_ksiazek_wypozyczonych_pom = new bool[ile_ksiazek];
+    if (*tablica_ksiazek != nullptr) {
+        for (int i = 0; i < ile_ksiazek - 1; i++) {
+            tablica_ksiazek_pom[i] = const_tab_ksiazek[i];
+            tablica_ksiazek_wypozyczonych_pom[i] = const_tab_wypozyczonych[i];
+        }
+        delete[] * tablica_ksiazek;
+        delete[] * tablica_ksiazek_wypozyczonych;
+    }
+
+    tablica_ksiazek_pom[ile_ksiazek - 1] = create_book(tytul, autor, ISBN, wydawnictwo, rok_wydania, seria_wydawnicza, Id_ksiazek);
+    tablica_ksiazek_wypozyczonych_pom[ile_ksiazek - 1] = false;
+
+    *tablica_ksiazek = tablica_ksiazek_pom;
+    *tablica_ksiazek_wypozyczonych = tablica_ksiazek_wypozyczonych_pom;
+}
+
+void delete_book(Book ksiazka, Book** tablica_ksiazek, int& ile_ksiazek, bool** tablica_ksiazek_wypozyczonych) {
+    if (*tablica_ksiazek != nullptr) {
+        for (int i = 0; i < ile_ksiazek; i++) {
+            if ((*tablica_ksiazek)[i].ID_ksiazek == ksiazka.ID_ksiazek) {
+                Book* tablica_ksiazek_pom = new Book[--ile_ksiazek];
+                bool* tablica_ksiazek_wypozyczonych_pom = new bool[ile_ksiazek];
+                for (int j = 0; j <= ile_ksiazek; j++) {
+                    if (i == j) {
+                        ++j;
+                    }
+                    *tablica_ksiazek_pom = (*tablica_ksiazek)[j];
+                    *tablica_ksiazek_wypozyczonych_pom = (*tablica_ksiazek_wypozyczonych)[j];
+                    tablica_ksiazek_pom++;
+                    tablica_ksiazek_wypozyczonych_pom++;
+                }
+                tablica_ksiazek_pom -= (ile_ksiazek);
+                tablica_ksiazek_wypozyczonych_pom -= (ile_ksiazek);
+
+                delete[] (* tablica_ksiazek);
+                delete[] (* tablica_ksiazek_wypozyczonych);
+                (*tablica_ksiazek) = tablica_ksiazek_pom;
+                (*tablica_ksiazek_wypozyczonych) = tablica_ksiazek_wypozyczonych_pom;
+                cout << "Pomyslnie usunieto ksiazke" << endl;
+                return;
+            }
+        }
+        cout << "Nie znaleziono takiej ksiazki " << endl;
+    }
+    cout << "tablica ksiazek jest pusta";
+}
+
+Osoba create_person(string* imie, int ile_imion, string nazwisko, Adres adres, int& ID_klienta) {
+    Osoba klient = { imie, ile_imion, nazwisko, adres, ID_klienta };
+    ID_klienta++;
+    return klient;
+}
+
+void add_person(string* imie, int ile_imion, string nazwisko, Adres adres, int& ID_klienta, int& ile_klientow, Osoba** tablica_kilentow) {
+    if (*tablica_kilentow != nullptr) {
+        Osoba* tablica_klientow_pom = new Osoba[++ile_klientow];
+        for (int i = 0; i < ile_klientow; i++) tablica_klientow_pom[i] = (*tablica_kilentow)[i];
+        tablica_klientow_pom[ile_klientow - 1] = create_person(imie, ile_imion, nazwisko, adres, ID_klienta);
+        delete[] * tablica_kilentow;
+        (*tablica_kilentow) = tablica_klientow_pom;
+    }
+    else {
+        Osoba* tablica_klientow_pom = new Osoba[++ile_klientow];
+        *tablica_klientow_pom = create_person(imie, ile_imion, nazwisko, adres, ID_klienta);
+        (*tablica_kilentow) = tablica_klientow_pom;
+    }
+}
+
+
+
+Book* find_by_autor(Book* tablica_ksiazek, int ile_ksiazek, Autor autor) {
+    int pom1 = 0;
+    for (int i = 0; i < ile_ksiazek; i++) {
+        if (tablica_ksiazek[i].autor.ID_autora == autor.ID_autora)  pom1++;
+    }
+    Book* print = new Book[pom1];
+    for (int i = 0; i < ile_ksiazek; i++) {
+        if (tablica_ksiazek[i].autor.ID_autora == autor.ID_autora) print[--pom1] = tablica_ksiazek[i];
+    }
+    return print;
+}
+
+Book find_by_title(string title, int ile_ksiazek, Book* tablica_ksiazek) {
+    for (int i = 0; i <= ile_ksiazek; i++) if (tablica_ksiazek[i].tytul == title) return tablica_ksiazek[i];
+}
+
+Book* find_by_print(string wydawnictwo, int ile_ksiazek, Book* tablica_ksiazek) {
+    int pom = 0;
+    for (int i = 0; i <= ile_ksiazek; i++) {
+        if (tablica_ksiazek[i].seria_wydawnicza == wydawnictwo)  pom++;
+    }
+    if (pom == 0) cout << "Nie znalezlismy zadnych pasujacych wynikow " << endl;
+    else
+    {
+        Book* print = new Book[pom];
+        for (int i = 0; i <= ile_ksiazek; i++) {
+            if (tablica_ksiazek[i].seria_wydawnicza == wydawnictwo) {
+                *print = tablica_ksiazek[i];
+                print++;
+            }
+        }
+        return print;
+    }
+}
+
+
+
+void wypozycz(Book ksiazka, Book* tablica_ksiazek, bool** tablica_ksiazek_wypozyczonych, int ile_ksiazek) {
+    for (int i = 0; i < ile_ksiazek; i++) {
+        if (ksiazka.ID_ksiazek == tablica_ksiazek[i].ID_ksiazek) {
+            if (*tablica_ksiazek_wypozyczonych[i] != true) {
+                *tablica_ksiazek_wypozyczonych[i] = true;
                 cout << "Wypozyczono pomyslnie " << endl;
                 return;
             }
@@ -62,17 +215,15 @@ void wypozycz(Book ksiazka) {
                 return;
             }
         }
-        tablica_ksiazek++;
-        ktory++;
     }
+    cout << "Nie znalezlismy takiej ksiazki " << endl;
 }
 
-void zwroc(Book ksiazka) {
-    int ktory = 0;
-    while (ktory < 1000) {
-        if (ksiazka.ISBN == tablica_ksiazek->ISBN) {
-            if (tablica_ksiazek_wypozyczonych[ktory] == true) {
-                tablica_ksiazek_wypozyczonych[ktory] = false;
+void zwroc(Book ksiazka, Book* tablica_ksiazek, bool** tablica_ksiazek_wypozyczonych, int ile_ksiazek) {
+    for (int i = 0; i < ile_ksiazek; i++) {
+        if (ksiazka.ID_ksiazek == tablica_ksiazek[i].ID_ksiazek) {
+            if ((*tablica_ksiazek_wypozyczonych)[i] == true) {
+                *tablica_ksiazek_wypozyczonych[i] = false;
                 cout << "Zwrocono pomyslnie " << endl;
                 return;
             }
@@ -81,157 +232,52 @@ void zwroc(Book ksiazka) {
                 return;
             }
         }
-        tablica_ksiazek++;
-        ktory++;
     }
+    cout << "Nie znalezlismy takiej ksiazki " << endl;
 }
-
-void add_Book(Book nazwa) {
-    *tablica_ksiazek = nazwa;
-    tablica_ksiazek++;
-    ile_ksiazek++;
-}
-
-int ID_autora(Autor nowy) {
-    for (int i = 0; i < ile_ksiazek; i++) {
-        if (tablica_ksiazek[i].autor.imie == nowy.imie) {
-            if (tablica_ksiazek[i].autor.nazwisko == nowy.nazwisko) {
-                return tablica_ksiazek[i].autor.ID;
-            }
-        }
-    }
-    ID++;
-    return ID;
-}
-
-void create_Book() {
-    string tytul;
-    cout << "Podaj nazwe ksiazki ";
-    cin >> tytul;
-    int ile_imion;
-    cout << endl << "Ile autor ma imion? ";
-    cin >> ile_imion;
-    string* imie = new string[ile_imion];
-    for (int i = 0; i < ile_imion; i++) {
-        cout << "Podaj jego " << i << " imie";
-        cin >> *imie;
-        imie++;
-    }
-    string nazwisko;
-    cout << endl << "Podaj nazwiko autora ";
-    cin >> nazwisko;
-    char ISBN[13];
-    cout << endl << "podaj ISBN ";
-    for (int i = 0; i < 13; i++) {
-        cin >> ISBN[i];
-    }
-    string wydawnictwo;
-    cout << endl << "Podaj wydawnictwo ";
-    cin >> wydawnictwo;
-    int rok_wydania;
-    cout << endl << "Podaj rok wydania ";
-    cin >> rok_wydania;
-    int seria;
-    cout << endl << "Czy ksiązka ma seriw wydawniczą? (jeśli tak naciśnij 1) ";
-    cin >> seria;
-    string seria_wydawincza = "";
-    if (seria == 1) {
-        cout << endl << "Podaj serie wydawniczą ";
-        cin >> seria_wydawincza;
-    }
-    Autor autor = { imie, nazwisko, ID };
-    autor.ID = ID_autora(autor);
-    Book ksiazka = { tytul, autor, ISBN, wydawnictwo, rok_wydania, seria_wydawincza };
-    return add_Book(ksiazka);
-}
-
-
-void delete_book(Book ksiazka) {
-    int i = 0;
-    while (i < 1000)
-    {
-        if (tablica_ksiazek[i].tytul == ksiazka.tytul) {
-            Book* tablica_ksiazek1 = new Book[1000];
-            for (int j = 0; j < ile_ksiazek; j++) {
-                if (i == j) j++;
-                tablica_ksiazek1[i] = tablica_ksiazek[j];
-            }
-            for (int j = 0; j < ile_ksiazek - 1; j++) {
-                tablica_ksiazek[i] = tablica_ksiazek1[i];
-            }
-            ile_ksiazek--;
-            cout << "Pomyslnie usunieto ksiazke" << endl;
-            return;
-        }
-        i++;
-    }
-}
-
-void usuwanie_book() {
-    string ISBN1;
-    cout << "Podaj ISBN " << endl;
-    cin >> ISBN1;
-    char* ISBN = new char[13];
-    strcpy(ISBN, ISBN1.c_str());
-    for (int i = 0; i < ile_ksiazek; i++) {
-        if (tablica_ksiazek[i].ISBN == ISBN1) return delete_book(tablica_ksiazek[i]);
-    }
-}
-
-void add_person(Osoba person) {
-    int i = 0;
-    while (i < 1000)
-    {
-        if (tablica_kilentow[i].imie == "") {
-            tablica_kilentow[i] = person;
-            return;
-        }
-        i++;
-    }
-
-}
-
-void add_klient() {
-    string miasto;
-    string ulica;
-    int nr_domu;
-    int nr_mieszkania;
-    int kod;
-    string imie;
-    string nazwisko;
-    cout << "Podaj miasto, ulice nr_domu, kod pocztowy" << endl;
-    cin >> miasto >> ulica >> nr_domu >> kod;
-    cout << "Czy klient ma nr_mieszkania? (jeśli tak nacisnij 1)<<endl";
-    int sprawdz;
-    cin >> sprawdz;
-    if (sprawdz == 1) {
-        cout << "Podaj nr mieszkania" << endl;
-        cin >> nr_mieszkania;
-    }
-    Adres klienta = { miasto, ulica,nr_domu,nr_mieszkania,kod };
-    cout << "Podaj imie i nazwisko klienta" << endl;
-    cin >> imie >> nazwisko;
-    Osoba klient = { imie, nazwisko, klienta };
-    return add_person(klient);
-}
-
-
 
 
 
 int main(void) {
-    for (int i = 0; i < 1000; i++) tablica_ksiazek_wypozyczonych[i] = false;
-    // ustalam ze niewypozyczone ksiazki maja wartośc false
-    char isbn[13] = { '1','1','1','1','1','1','1','1','1','1','1','1','1' };
-    char* isbn1 = isbn;
-    Book Wiedzmin = { "wiedzmin",Sapkowski,isbn1,"Nowa era",2000,"wiedzmin" };
-    wypozycz(Wiedzmin);
-    zwroc(Wiedzmin);
-    add_Book(Wiedzmin);
-    create_Book();
-    delete_book(Wiedzmin);
-    usuwanie_book();
-    add_klient();
-    add_person(klient1);
+    int y = 5;
+    f(&y, 3);
+
+    int ID_autora = 0, ile_autorow = 0, Id_ksiazek = 0, ile_ksiazek = 0, ID_klienta = 0, ile_klientow = 0;
+
+    Book* tablica_ksiazek = nullptr;
+    Osoba* tablica_kilentow = nullptr;
+    Autor* tablica_autorow = nullptr;
+    bool* tablica_ksiazek_wypozyczonych = nullptr;
+
+    string* imiona = new string[2];
+    imiona[0] = "Maciej";
+    imiona[1] = "Tomasz";
+
+    add_autor(imiona, 2, "Sapkowski", ID_autora, &tablica_autorow, ile_autorow);
+
+    print_autor(tablica_autorow[0]);
+
+    add_book("Ostatnie Zyczenie", tablica_autorow[0], "1234567890123", "Nowa era", 2003, "Wiedzmin", &tablica_ksiazek, tablica_ksiazek, ile_ksiazek, Id_ksiazek, &tablica_ksiazek_wypozyczonych, tablica_ksiazek_wypozyczonych);
+    add_book("Wieza Jaskolki", tablica_autorow[0], "1234567890123", "Nowa era", 1998, "Wiedzmin", &tablica_ksiazek, tablica_ksiazek, ile_ksiazek, Id_ksiazek, &tablica_ksiazek_wypozyczonych, tablica_ksiazek_wypozyczonych);
+    add_book("Wieczny Ogien", tablica_autorow[0], "1234567890123", "Nowa era", 1993, "Wiedzmin", &tablica_ksiazek, tablica_ksiazek, ile_ksiazek, Id_ksiazek, &tablica_ksiazek_wypozyczonych, tablica_ksiazek_wypozyczonych);
+
+    delete_book(tablica_ksiazek[1], &tablica_ksiazek, ile_ksiazek, &tablica_ksiazek_wypozyczonych);
+
+    add_book("Wieczny Ogien", tablica_autorow[0], "1234567890123", "Nowa era", 1993, "Wiedzmin", &tablica_ksiazek, tablica_ksiazek, ile_ksiazek, Id_ksiazek, &tablica_ksiazek_wypozyczonych, tablica_ksiazek_wypozyczonych);
+
+    delete_book(tablica_ksiazek[1], &tablica_ksiazek, ile_ksiazek, &tablica_ksiazek_wypozyczonych);
+
+    Adres adres = { "Poznan","Fredry",12,12,12 };
+
+    add_person(imiona, 2, "Jankowiak", adres, ID_klienta, ile_klientow, &tablica_kilentow);
+
+    Book* by_autor = find_by_autor(tablica_ksiazek, ile_ksiazek, tablica_autorow[0]);
+    Book by_title = find_by_title("Wieza Jaskolki", ile_ksiazek, tablica_ksiazek);
+    Book* by_wydawnictwo = find_by_print("Nowa era", ile_ksiazek, tablica_ksiazek);
+
+    wypozycz(tablica_ksiazek[0], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
+    zwroc(tablica_ksiazek[0], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
+    zwroc(tablica_ksiazek[1], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
+
     return 0;
 }
