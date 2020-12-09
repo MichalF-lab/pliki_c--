@@ -19,12 +19,12 @@ double przedzial1(double p1, double q1, int& poziom) {
     else return przedzial1(srodek, q1, poziom);
 }
 
+
+
 double x(double x) {
-    return 0.44;
+    return ((3 * (x * x)) + (2 * x) - 7);
     //  x1 = 0,87 x2 = -1,54 
 }
-
-
 
 double przedzial2(double p1, double q1, int& poziom) {
     if (x(p1) == 0) return p1;
@@ -39,7 +39,11 @@ double przedzial2(double p1, double q1, int& poziom) {
 
 
 int main(void) {
-    double p1 = 0, q1 = 8;
+
+    short p1 = 0, q1 = 8;
+    if(q1){
+        
+    }
     // p1 ma być mniejsze od q1
     int poziom = 0;
     double wynik = przedzial1(p1, q1, poziom);

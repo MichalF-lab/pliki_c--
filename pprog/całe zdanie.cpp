@@ -117,6 +117,8 @@ void delete_book(Book ksiazka, Book** tablica_ksiazek, int& ile_ksiazek, bool** 
             if ((*tablica_ksiazek)[i].ID_ksiazek == ksiazka.ID_ksiazek) {
                 Book* tablica_ksiazek_pom = new Book[--ile_ksiazek];
                 bool* tablica_ksiazek_wypozyczonych_pom = new bool[ile_ksiazek];
+                Book* adres_1 = tablica_ksiazek_pom;
+                bool* adres_2 = tablica_ksiazek_wypozyczonych_pom;
                 for (int j = 0; j <= ile_ksiazek; j++) {
                     if (i == j) {
                         ++j;
@@ -126,13 +128,13 @@ void delete_book(Book ksiazka, Book** tablica_ksiazek, int& ile_ksiazek, bool** 
                     tablica_ksiazek_pom++;
                     tablica_ksiazek_wypozyczonych_pom++;
                 }
-                tablica_ksiazek_pom -= ile_ksiazek;
-                tablica_ksiazek_wypozyczonych_pom -= ile_ksiazek;
 
-                delete[] * tablica_ksiazek;
-                delete[] * tablica_ksiazek_wypozyczonych;
-                (*tablica_ksiazek) = tablica_ksiazek_pom;
-                (*tablica_ksiazek_wypozyczonych) = tablica_ksiazek_wypozyczonych_pom;
+
+                delete[](*tablica_ksiazek);
+                delete[](*tablica_ksiazek_wypozyczonych);
+                (*tablica_ksiazek) = adres_1;
+                (*tablica_ksiazek_wypozyczonych) = adres_2;
+                cout << (*tablica_ksiazek_wypozyczonych) << endl;
                 cout << "Pomyslnie usunieto ksiazke" << endl;
                 return;
             }
@@ -241,7 +243,7 @@ void zwroc(Book ksiazka, Book* tablica_ksiazek, bool** tablica_ksiazek_wypozyczo
 int main(void) {
     int y = 5;
     f(&y, 3);
-    
+
     int ID_autora = 0, ile_autorow = 0, Id_ksiazek = 0, ile_ksiazek = 0, ID_klienta = 0, ile_klientow = 0;
 
     Book* tablica_ksiazek = nullptr;
@@ -263,9 +265,14 @@ int main(void) {
 
     delete_book(tablica_ksiazek[1], &tablica_ksiazek, ile_ksiazek, &tablica_ksiazek_wypozyczonych);
 
+    add_book("Wieczny Ogien", tablica_autorow[0], "1234567890123", "Nowa era", 1993, "Wiedzmin", &tablica_ksiazek, tablica_ksiazek, ile_ksiazek, Id_ksiazek, &tablica_ksiazek_wypozyczonych, tablica_ksiazek_wypozyczonych);
+
+    delete_book(tablica_ksiazek[1], &tablica_ksiazek, ile_ksiazek, &tablica_ksiazek_wypozyczonych);
+
     Adres adres = { "Poznan","Fredry",12,12,12 };
 
     add_person(imiona, 2, "Jankowiak", adres, ID_klienta, ile_klientow, &tablica_kilentow);
+
     Book* by_autor = find_by_autor(tablica_ksiazek, ile_ksiazek, tablica_autorow[0]);
     Book by_title = find_by_title("Wieza Jaskolki", ile_ksiazek, tablica_ksiazek);
     Book* by_wydawnictwo = find_by_print("Nowa era", ile_ksiazek, tablica_ksiazek);
@@ -273,5 +280,6 @@ int main(void) {
     wypozycz(tablica_ksiazek[0], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
     zwroc(tablica_ksiazek[0], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
     zwroc(tablica_ksiazek[1], tablica_ksiazek, &tablica_ksiazek_wypozyczonych, ile_ksiazek);
+
     return 0;
 }
