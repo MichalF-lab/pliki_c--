@@ -6,4 +6,4 @@ def silnia():
         b*=i+1
     print(b)
 
-r=silnia()
+silnia()

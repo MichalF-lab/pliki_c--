@@ -13,5 +13,8 @@ void sumciag()
 int main()
 {
 	sumciag();
+	int a;
+	cin>>a;
 	return 0;
+
 }
