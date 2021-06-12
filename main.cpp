@@ -3,10 +3,9 @@
 #include <cstdlib>
 using namespace std;
 
-
 int main()
 {
-    int nr_lini=1, zad_a_suma=0,liczba;
+    int nr_lini=1,liczba;
     string linia;
     fstream plik1, plik2;
     plik1.open("dane_1.txt", ios::in);
